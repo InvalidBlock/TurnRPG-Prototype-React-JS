@@ -1,8 +1,10 @@
-import React from 'react'
 
 function Game({ changeScene }) {
   return (
-    <div>Game</div>
+    <>
+        <h1>Game Scene</h1>
+        
+    </>
   )
 }
 
