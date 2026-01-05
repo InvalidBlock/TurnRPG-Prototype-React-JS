@@ -3,10 +3,7 @@ import { useState } from "react";
 // Importar função de autenticação da Game Jolt
 import { authenticateUser } from "../../../services/Gamejolt/Gamejolt"
 
-// Importa as credenciais do usuário (Dev)
-import { setDevCredentials } from "./Credentials.js";
-
-function Auth() {
+function Auth({ onSuccess }) {
 
     // Armazena os valores dos inputs
     const [usernameInput, setUsernameInput] = useState("");
@@ -20,8 +17,6 @@ function Auth() {
     */
     function handleAuth() {
 
-        // Atualiza as credenciais com os valores dos inputs no Credentials.js
-        setDevCredentials(usernameInput, tokenInput);
         // Atualiza o status para o usuário
         setStatus("Autenticando...");
 
@@ -33,6 +28,7 @@ function Auth() {
                 // Verifica result (É usado esse nome, pois ele se refere ao resultado da chamada da API) se ele não é nulo e se a autenticação foi bem sucedida
                 if (result && result.response.success === "true") {
                     setStatus("Usuário autenticado com sucesso");
+                    onSuccess();
                 } else {
                     setStatus("Falha na autenticação");
                 }

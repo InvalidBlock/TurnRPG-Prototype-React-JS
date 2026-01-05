@@ -3,8 +3,7 @@
 import md5 from "crypto-js/md5";
 
 // Importa as credenciais do usuário (Dev)
-import { getDevCredentials } from "../../components/DEV/Auth/Credentials.js";
-import { DEV_MODE } from "../../components/DEV/Auth/Credentials.js";
+import { getDevCredentials, setDevCredentials, DEV_MODE } from "../../components/DEV/Auth/Credentials.js";
 
 // ID do jogo fornecido pelo painel da Game Jolt
 const GAME_ID = "1040406";
@@ -72,6 +71,12 @@ function callApi(endpoint, params) {
   Verifica se username e token são válidos.
 */
 export function authenticateUser(username, userToken) {
+
+  // Atualiza as credenciais dos dev no Credentials.js
+  if (DEV_MODE) {
+    setDevCredentials(username, userToken, true);
+  }
+
   return callApi("/users/authenticate/", {
     username: username,
     user_token: userToken

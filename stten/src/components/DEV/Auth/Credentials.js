@@ -4,13 +4,15 @@ export const DEV_MODE = true;
 // Armazena as credenciais do usuário (Dev)
 const devCredentials = {
     token: "",
-    username: ""
+    username: "",
+    authenticated: false
 }
 
 // Exporta a função para atualizar as credenciais
-export function setDevCredentials(newUsername, newToken) {
+export function setDevCredentials(newUsername, newToken, newAuthenticated) {
     devCredentials.username = newUsername;
     devCredentials.token = newToken;
+    devCredentials.authenticated = newAuthenticated;
 }
 
 // Exporta as credenciais para uso em outros componentes
