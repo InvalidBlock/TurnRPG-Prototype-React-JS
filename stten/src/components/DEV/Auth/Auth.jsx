@@ -39,7 +39,7 @@ function Auth({ onSuccess }) {
     return (
         <div>
             <h3>Authenticação (MODO DEV)</h3>
-            {/* Nome do usuário */} <input placeholder="Username Game Jolt" value={usernameInput} onChange={function (e) { setUsernameInput(e.target.value); }} />
+            {/* Nome do usuário */} <input placeholder="Username Game Jolt" value={usernameInput} onChange={function (e) { setUsernameInput(e.target.value);}} autoFocus />
             {/*O <br /> é usado para quebrar a linha */}<br />
             {/* Token*/} <input placeholder="User Token (Dev)" value={tokenInput} onChange={function (e) { setTokenInput(e.target.value); }} />
             <br /> <br />
