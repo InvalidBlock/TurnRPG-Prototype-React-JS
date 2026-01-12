@@ -1,3 +1,4 @@
+import "./DEV/CombatTest.js"
 
 function Game({ changeScene }) {
   return (

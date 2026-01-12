@@ -1,67 +1,82 @@
-export const player = {
+export class Player {
 
-    // Estado de Morto
-    dead: false,
-    // Postura do jogador
-    posture: "offensive", // "offensive" | "defensive"
+    constructor() {
+        this.id = "player";
+        this.name = "Player";
 
-    // Status de Vida Bruta
-    health: {
-        current: 10,
-        max: 10
-    },
+        this.dead = false;
+        this.posture = "offensive"; // "offensive" | "defensive"
 
-    // Status
-    stats: {
-        res: {
-            defense: 1,
-            armor: 0
-        },
-        dmg: {
-            damage: 1,
-        }
-    },
-};
+        this.health = {
+            current: 10,
+            max: 10
+        };
 
-// Função para o jogador levar dano
-export function takeDamage(enemy_damage) {
-    // Se ele já estiver morto
-    if (player.dead) return;
+        this.stats = {
+            res: {
+                defense: 1,
+                armor: 0
+            },
+            dmg: {
+                damage: 2,
+            }
+        };
 
-    // Cálculo da redução de dano
-    let reduction = player.posture === "defensive"
-        ? player.stats.res.defense + player.stats.res.armor
-        : player.stats.res.armor
-
-    // O dano do inimigo é reduzido pela defesa se o jogador estiver em postura defensva, se não é só a resistência da armadura
-    let dmg_taken = Math.max(0, enemy_damage - reduction);
-
-    // Diminuir vida do jogador
-    player.health.current -= dmg_taken;
-
-    // Verificar se o jogador morreu, ativar o estado e dar "Game Over".
-    if (player.health.current <= 0) {
-        player.health.current = 0;
-        player.dead = true;
+        // Para visualização via console
+        console.log(this.name + " foi criado!");
+        console.log(this);
     }
-};
 
-// Função para dar dano
-export function attack(target) {
-    // Ativa a função de dar dano no inimigo passando os valores atuais do atributos do jogador
-    target.takeDamage(player.stats.dmg.damage);
-}
+    takeDamage(enemy_damage) {
+        // Se ele já morreu é só retornar
+        if (this.dead) return;
 
-// Função para resetar o jogador
-export function resetPlayer() {
-    player.dead = false
-    player.posture = "offensive"
+        // Se o jogador estiver em uma postura defensiva a redução não fica apenas na armadura e soma com a defesa
+        const reduction = this.posture === "defensive"
+            ? this.stats.res.defense + this.stats.res.armor
+            : this.stats.res.armor;
 
-    player.health.max = 10
-    player.health.current = 10
+        // Cálculo do dano verdadeiro
+        const damage_taken = Math.max(0, enemy_damage - reduction);
 
-    player.stats.dmg.damage = 1
+        // Diminuir a vida do jogador pelo dano verdadeiro
+        this.health.current -= damage_taken;
 
-    player.stats.res.armor = 0
-    player.stats.res.defense = 1
+        // Para visualização via console
+        console.log(this.name + ": Posture = " + this.posture);
+        console.log(this.name + ": Reduction = " + reduction + " ( armor: " + this.stats.res.armor + ", defense: " + this.stats.res.defense + " )");
+        console.log(this.name + ": Damage taken = " + damage_taken + " ( enemy damage: " + enemy_damage + " )");
+
+        // Verifica se o dano foi fatal
+        if (this.health.current <= 0) {
+            this.health.current = 0;
+            this.dead = true;
+
+            // Para visualização via console
+            console.log(this.name + ": Morreu");
+        }
+    }
+
+    attack(target) {
+        target.takeDamage(this.stats.dmg.damage);
+
+        // Para visualização via console
+        console.log(this.name + ": Atacou " + target.name + " causando " + this.stats.dmg.damage + " de dano.");
+    }
+
+    resetPlayer() {
+        this.dead = false;
+        this.posture = "offensive";
+
+        this.health.max = 10;
+        this.health.current = 10;
+
+        this.stats.dmg.damage = 1;
+        this.stats.res.armor = 0;
+        this.stats.res.defense = 1;
+
+        // Para visualização via console
+        console.log(this.name + ": Resetado para início de uma nova run");
+        console.log(this);
+    }
 }

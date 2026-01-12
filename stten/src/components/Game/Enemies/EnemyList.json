@@ -1,0 +1,12 @@
+{
+    "skeleton": {
+        "id": "skeleton",
+        "name": "Skeleton",
+        "stats": {
+            "max_health": 4,
+            "damage": 2,
+            "defense": 1,
+            "armor": 0
+        }
+    }
+}
