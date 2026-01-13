@@ -18,7 +18,7 @@ export class Player {
                 armor: 0
             },
             dmg: {
-                damage: 2,
+                physical: 2,
             }
         };
 
@@ -57,13 +57,6 @@ export class Player {
         }
     }
 
-    attack(target) {
-        target.takeDamage(this.stats.dmg.damage);
-
-        // Para visualização via console
-        console.log(this.name + ": Atacou " + target.name + " causando " + this.stats.dmg.damage + " de dano.");
-    }
-
     resetPlayer() {
         this.dead = false;
         this.posture = "offensive";
@@ -71,7 +64,7 @@ export class Player {
         this.health.max = 10;
         this.health.current = 10;
 
-        this.stats.dmg.damage = 1;
+        this.stats.dmg.physical = 1;
         this.stats.res.armor = 0;
         this.stats.res.defense = 1;
 

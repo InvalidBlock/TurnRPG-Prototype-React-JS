@@ -1,0 +1,14 @@
+.stats {
+
+    position: absolute;
+    top: -23px;
+
+    line-height: 0px;
+
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+
+    gap: 50px;
+
+}

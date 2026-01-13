@@ -57,16 +57,4 @@ export class Enemy {
 
     }
 
-    // Função de atacar
-    attack(target) {
-        target.takeDamage(this.stats.damage)
-
-        // Para visualização via console
-        console.log(this.name + " ( " + this.id + " ): Atacou o " + target.name + " com " + this.stats.damage + " de dano.")
-
-        console.log(
-            this.name + " ( " + this.id + " ): Atacou o " + target.name + " com " + this.stats.damage + " de dano."
-        );
-    }
-
 };
