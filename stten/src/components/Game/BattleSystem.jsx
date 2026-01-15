@@ -53,6 +53,22 @@ function BattleSystem({ onPlayerUpdate }) {
     });
   }
 
+  function attack(attacker, defender) {
+
+    // Verificar se o ataque vai ser normal ou critico
+    const critical = Math.random() < attacker.stats.dmg.critical_chance;
+
+    // O multiplicador é fixo, ou seja, o critico sempre será 180% do dano
+    // Essa variável é o dano que vai ser passado para o defensor
+    const final_damage = critical
+    ? Math.floor(attacker.stats.dmg.physical * 1.8)
+    : attacker.stats.dmg.physical;
+
+    defender.takeDamage(final_damage);
+    console.log(`${attacker.name}: Atacou ${defender.name} e ${critical ? "critou dando ":"deu "}${final_damage}`)
+
+  }
+
   // Como o BattleSystem não renderiza nada diretamente
   return null;
 }
