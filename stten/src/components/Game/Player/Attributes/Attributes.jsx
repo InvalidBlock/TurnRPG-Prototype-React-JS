@@ -7,7 +7,7 @@ function Attributes({ player }) {
       <div className="geral">
         <h2 className="name">{player.name}</h2>
         <p className="health"> Health: {player.health.current} / {player.health.max}</p>
-        <p className="posture">Posture: {player.posture === "offensive" ? "Offensive" : "Defensive"}</p>
+        <p className="posture">Posture: <span style={player.posture === "offensive" ? {color: "red"} : {color: "cornflowerblue"}}>{player.posture === "offensive" ? "Offensive" : "Defensive"}</span></p>
       </div>
 
       <div className="res">

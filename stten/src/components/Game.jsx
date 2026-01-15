@@ -7,7 +7,6 @@ import TurnStats from "./Game/UI/TurnStats"
 import Options from "./Game/UI/Options.jsx"
 // Luta
 import BattleSystem from "./Game/BattleSystem.jsx"
-import { turn } from "./Game/BattleSystem.jsx"
 // Ações e Cartas
 import Attack from "./Game/UI/Actions/Attack.jsx"
 import Defend from "./Game/UI/Actions/Defend.jsx"
@@ -15,12 +14,43 @@ import Items from "./Game/UI/Actions/Items.jsx"
 import Cards from "./Game/UI/Cards/Cards.jsx"
 // Estatísticas
 import Attributes from "./Game/Player/Attributes/Attributes.jsx"
+import BottomBar from "./Game/UI/BottomBar.jsx"
 
 function Game({ changeScene }) {
-  const [player, setPlayer] = useState(null)
 
-  // Estado que define se o jogador deve escolher alguma carta
-  let choose_cards = true
+  /*
+  =================================
+  --- >>> Váriaveis Globais <<< ---
+  =================================
+  */
+
+  // Jogador
+  const [player, setPlayer] = useState(null);
+
+  // Turno
+  const [turn, setTurn] = useState("player");
+
+  // Intenção declarada
+  const [intention, setIntention] = useState(null);
+  /*
+  A intenção é definida pelo jogador ou inimigo, ela aparecerá da seguinte forma
+
+  {
+  actor: "player" || "enemy"
+  actor_id: "player" || "x"
+  type: "attack" || "defend" || "item"
+
+  // O null é para caso não seja atacar
+  target: "enemy" || "player" || null
+  target_id: "x" || null
+  
+  item: "item" || null
+  }
+  */
+
+  // Estado que define se o jogador deve escolher alguma carta (Provisório)
+  let choose_cards = false
+
   return (
     <>
       {/*
@@ -36,17 +66,21 @@ function Game({ changeScene }) {
 
       */}
 
-      {/* UI Top */}
-      <div className="bar-top"><TurnStats /><Options /></div>
-
       {/* Char's / Luta */}
-      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} /></div>
+      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} turn={turn} setTurn={setTurn} intention={intention} setIntention={setIntention} /></div>
 
       {player && <div className="player">
 
-        {/* Ações || Cartas */}
-        {choose_cards === false && turn === "player" && <div className="actions"><Attack /><Defend /><Items /></div>}
-        {choose_cards === true && turn === "player" && <div className="cards"><Cards /></div>}
+        {/* UI Top */}
+        <div className="bar-top"><TurnStats turn={turn} player={player} /><Options /></div>
+
+        {/* 
+        
+        Ações || Cartas 
+        Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
+
+        */}
+        <div className="bar-bottom"><BottomBar turn={turn} choose_cards={choose_cards}/></div>
 
         {/* Estátisticas */}
         <div className="estatistics"><Attributes player={player} /></div>

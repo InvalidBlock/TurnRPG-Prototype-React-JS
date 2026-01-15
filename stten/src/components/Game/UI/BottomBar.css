@@ -1,0 +1,16 @@
+.actions {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 250px;
+
+}
+
+.cards {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}

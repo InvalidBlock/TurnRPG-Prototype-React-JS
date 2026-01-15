@@ -2,7 +2,7 @@ export class Player {
 
     constructor() {
         this.id = "player";
-        this.name = "Player";
+        this.name = "Josias";
 
         this.dead = false;
         this.posture = "offensive"; // "offensive" | "defensive"

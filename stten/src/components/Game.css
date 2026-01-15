@@ -14,6 +14,10 @@
     top: 0px;
     left: 0px;
     right: 0px;
+    bottom: 570px;
+
+    /*Para Debug*/
+    /* border: 1px solid red; */
 
     display: flex;
     flex-direction: row;
@@ -35,7 +39,8 @@
     justify-content: center;
     align-items: center;
 
-    border: 1px solid red;
+    /*Para Debug*/
+    /* border: 1px solid red; */
 
     position: absolute;
     top: 45px;
@@ -45,12 +50,11 @@
 
 }
 
-.actions,
-.cards {
+.bar-bottom {
 
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
 
     position: absolute;
     left: 0%;
@@ -58,26 +62,13 @@
     top: 440px;
     bottom: 110px;
 
+    /*Para Debug*/
+    /* border: 1px solid red; */
+
     padding: 12px 30px;
 
     background-color: hsla(0, 0%, 0%, 0.800);
     box-shadow: 0px 0px 30px 10px hsla(0, 0%, 0%, 0.800);
-
-}
-
-.actions {
-
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-}
-
-.cards {
-
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
 
 }
 
@@ -98,6 +89,9 @@
     background-color: hsla(0, 0%, 6.5%, 1);
     box-shadow: 0px 0px 10px 10px hsla(0, 0%, 6.5%, 1);
 
+    /*Para Debug*/
+    /* border: 1px solid red; */
+
 }
 
 .card-list {
@@ -113,5 +107,8 @@
     bottom: auto;
 
     padding-top: 20px;
+
+    /*Para Debug*/
+    /* border: 1px solid red; */
 
 }

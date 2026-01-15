@@ -1,6 +1,6 @@
 {
     "skeleton": {
-        "id": "skeleton",
+        "type": "Skeleton",
         "name": "Skeleton",
         "stats": {
             "max_health": 4,
