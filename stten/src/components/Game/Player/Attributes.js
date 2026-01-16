@@ -1,7 +1,8 @@
 export class Player {
 
-    constructor() {
-        this.id = "player";
+    constructor({id}) {
+        this.id = id;
+        this.type = "player"
         this.name = "Josias";
 
         this.dead = false;
@@ -18,8 +19,9 @@ export class Player {
                 armor: 0
             },
             dmg: {
-                physical: 2,
-            }
+                physical: 2
+            },
+            initiative: 2
         };
 
         // Para visualização via console

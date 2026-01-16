@@ -13,11 +13,11 @@ export class Enemy {
         this.type = type;
         this.name = data.name;
 
+        this.health = { ...data.health};
         this.stats = { ...data.stats };
-        this.current_hp = data.stats.max_health;
 
         // Para visualização via console
-        console.log("O inimigo " + this + " foi criado!")
+        console.log("O inimigo " + this.name + " ( " + this.id + " ) foi criado!")
         console.log(this, [this.type, this.name, this.stats, this.current_hp])
     }
 

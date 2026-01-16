@@ -1,12 +1,20 @@
 {
     "skeleton": {
-        "type": "Skeleton",
+        "type": "skeleton",
         "name": "Skeleton",
+        "health": {
+            "max": 4,
+            "current": 4
+        },
         "stats": {
-            "max_health": 4,
-            "damage": 2,
-            "defense": 1,
-            "armor": 0
+            "res": {
+                "defense": 1,
+                "armor": 0
+            },
+            "dmg": {
+                "physical": 2
+            },
+            "initiative": 1
         }
     }
 }

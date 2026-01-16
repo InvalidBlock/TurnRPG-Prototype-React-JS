@@ -6,13 +6,13 @@ import Items from "./Actions/Items"
 // Cartas
 import Cards from "./Cards/Cards"
 
-function BottomBar({ choose_cards, turn }) {
+function BottomBar({ choose_cards, turnActor }) {
 
     return (
         <>
-            {turn === "player" && !choose_cards
+            {turnActor === "player" && !choose_cards
                 ? <div className="actions"><Attack /><Defend /><Items /></div>
-                : turn === "player"
+                : turnActor === "player"
                     ? <div className="cards"><Cards /></div>
                     : <div />
             }

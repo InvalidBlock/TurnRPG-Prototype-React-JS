@@ -1,6 +1,6 @@
-import "./Attributes.css"
+import "./Estatistics.css"
 
-function Attributes({ player }) {
+function Estatistics({ player }) {
   return (
     <div className="stats">
 
@@ -25,4 +25,4 @@ function Attributes({ player }) {
   )
 }
 
-export default Attributes
+export default Estatistics

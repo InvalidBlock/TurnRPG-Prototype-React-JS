@@ -1,19 +1,14 @@
 import "./Game.css"
 import { useState } from "react"
-import { Player } from "./Game/Player/Attributes/Attributes.js"
 
 // UI
 import TurnStats from "./Game/UI/TurnStats"
 import Options from "./Game/UI/Options.jsx"
 // Luta
 import BattleSystem from "./Game/BattleSystem.jsx"
-// Ações e Cartas
-import Attack from "./Game/UI/Actions/Attack.jsx"
-import Defend from "./Game/UI/Actions/Defend.jsx"
-import Items from "./Game/UI/Actions/Items.jsx"
-import Cards from "./Game/UI/Cards/Cards.jsx"
 // Estatísticas
-import Attributes from "./Game/Player/Attributes/Attributes.jsx"
+import Estatistics from "./Game/UI/Estatistics.jsx"
+// Actions & Cards
 import BottomBar from "./Game/UI/BottomBar.jsx"
 
 function Game({ changeScene }) {
@@ -27,8 +22,37 @@ function Game({ changeScene }) {
   // Jogador
   const [player, setPlayer] = useState(null);
 
-  // Turno
-  const [turn, setTurn] = useState("player");
+  // Autor do Turno
+  const [turnActor, setTurnActor] = useState("player");
+  // Fase
+  const [phase, setPhase] = useState("");
+  /*
+
+  /~/~/ PREPARAÇÃO /~/~/
+
+  Criando Batalha
+  setPhase("creating")
+
+  Realizando Fila
+  setPhase("queue")
+
+  /~/~/ EM BATALHA /~/~/
+
+  Esperando Input do Autor
+  setPhase("awaiting_input");
+
+  Fazendo a Ação
+  setPhase("action");
+
+  Aplicando a lógica de final de turno
+  setPhase("end_turn");
+
+  /~/~/ PÓS-BATALHA
+
+  Analisar a batalha, tipo se o jogador pode escolher uma carta e como vai prosseguir o jogo
+  setPhase("analysing")
+
+  */
 
   // Intenção declarada
   const [intention, setIntention] = useState(null);
@@ -67,12 +91,12 @@ function Game({ changeScene }) {
       */}
 
       {/* Char's / Luta */}
-      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} turn={turn} setTurn={setTurn} intention={intention} setIntention={setIntention} /></div>
+      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase}/></div>
 
       {player && <div className="player">
 
         {/* UI Top */}
-        <div className="bar-top"><TurnStats turn={turn} player={player} /><Options /></div>
+        <div className="bar-top"><TurnStats turnActor={turnActor} player={player} /><Options /></div>
 
         {/* 
         
@@ -80,10 +104,10 @@ function Game({ changeScene }) {
         Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
 
         */}
-        <div className="bar-bottom"><BottomBar turn={turn} choose_cards={choose_cards}/></div>
+        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards}/></div>
 
         {/* Estátisticas */}
-        <div className="estatistics"><Attributes player={player} /></div>
+        <div className="estatistics"><Estatistics player={player} /></div>
 
         {/* Lista de Cartas */}
         <div className="card-list">Lista de Cartas (Nada por enquanto)</div>
