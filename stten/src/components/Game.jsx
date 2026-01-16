@@ -7,7 +7,7 @@ import Options from "./Game/UI/Options.jsx"
 // Luta
 import BattleSystem from "./Game/BattleSystem.jsx"
 // Estatísticas
-import Estatistics from "./Game/UI/Estatistics.jsx"
+import Statistics from "./Game/UI/Statistics.jsx"
 // Actions & Cards
 import BottomBar from "./Game/UI/BottomBar.jsx"
 
@@ -107,7 +107,7 @@ function Game({ changeScene }) {
         <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards}/></div>
 
         {/* Estátisticas */}
-        <div className="estatistics"><Estatistics player={player} /></div>
+        <div className="statistics"><Statistics player={player} /></div>
 
         {/* Lista de Cartas */}
         <div className="card-list">Lista de Cartas (Nada por enquanto)</div>
