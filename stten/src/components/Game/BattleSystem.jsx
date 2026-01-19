@@ -54,6 +54,10 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
 
     console.log("Inimigos foram criados: " + enemiesInstances)
 
+    // Mudar phase para montar a queue
+    setPhase("queue")
+    console.log(`BattleSystem: Phase changed to ${phase}!`);
+
   }, []);
 
   // Para caso o jogador morra ou escolha resetar a run
@@ -102,6 +106,7 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
 
       // Com os atores na fila, eles são organizados baseados em quem tem a maior iniciativa
     })).sort((a, b) => b.initiative - a.initiative);
+    console.log(`BattleSystem: A queue ficou da seguinte maneira!`, turnQueueRef.current);
 
     // Mostra para UI e Lógica quem é o autor do turno atual
     setTurnActor(turnQueueRef.current[0]);
@@ -165,6 +170,9 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
   //>>> END TURN <<< //
   /////////////////////
   useEffect(() => {
+    // Como ele tem apenas phase de dependência decidi colocar aqui o console.log que nos mostra a phase atual
+    console.log(`BattleSystem: Phase = ${phase}`);
+
     // Se não for a fase de final do turno
     if (phase !== "end_turn") return;
 
@@ -197,7 +205,9 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
     }
 
     // Se o número de mortos é igual ao número de inimigos que continha a batalha acaba, senão, é o próximo turno
-    if (aliveEnemies === 0) { setPhase("analysing") } else { nextTurn() };
+    if (aliveEnemies === 0) { 
+      setPhase("analysing"); 
+    } else { nextTurn() };
 
   }, [phase])
 
@@ -210,6 +220,9 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
     turnQueueRef.current.push(finished);
     // Muda o autor do turno para o novo primeiro elemento
     setTurnActor(turnQueueRef.current[0]);
+
+    // Mudar a phase
+    setPhase("awaiting_input")
 
   }
 

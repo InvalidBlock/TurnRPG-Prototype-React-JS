@@ -1,5 +1,5 @@
 import "./Game.css"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 // UI
 import TurnStats from "./Game/UI/TurnStats"
@@ -23,7 +23,7 @@ function Game({ changeScene }) {
   const [player, setPlayer] = useState(null);
 
   // Autor do Turno
-  const [turnActor, setTurnActor] = useState("player");
+  const [turnActor, setTurnActor] = useState(null);
   // Fase
   const [phase, setPhase] = useState("");
   /*
@@ -53,6 +53,10 @@ function Game({ changeScene }) {
   setPhase("analysing")
 
   */
+
+  useEffect(() => {
+    console.log("turnActor was changed!", turnActor)
+  }, [turnActor])
 
   // Intenção declarada
   const [intention, setIntention] = useState(null);
@@ -91,9 +95,9 @@ function Game({ changeScene }) {
       */}
 
       {/* Char's / Luta */}
-      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase}/></div>
+      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} /></div>
 
-      {player && <div className="player">
+      {player && turnActor !== null && <div className="player">
 
         {/* UI Top */}
         <div className="bar-top"><TurnStats turnActor={turnActor} player={player} /><Options /></div>
@@ -104,7 +108,7 @@ function Game({ changeScene }) {
         Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
 
         */}
-        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards}/></div>
+        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} /></div>
 
         {/* Estátisticas */}
         <div className="statistics"><Statistics player={player} /></div>

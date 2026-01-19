@@ -2,10 +2,10 @@ import "./Statistics.css"
 
 function Statistics({ player }) {
   return (
-    <div className="stats">
+    <div className="player-stats">
 
       <div className="geral">
-        <h2 className="name">{player.name}</h2>
+        <h2 style={{color: "cornflowerblue"}}>{player.name}</h2>
         <p className="health"> Health: {player.health.current} / {player.health.max}</p>
         <p className="posture">Posture: <span style={player.posture === "offensive" ? {color: "red"} : {color: "cornflowerblue"}}>{player.posture === "offensive" ? "Offensive" : "Defensive"}</span></p>
       </div>

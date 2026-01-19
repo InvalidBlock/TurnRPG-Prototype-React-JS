@@ -1,12 +1,11 @@
 function TurnStats({ turnActor, player }) {
 
   // Foi definido antes para ficar de forma mais clara
-  const who_turn = turnActor === "player" ? "player": "enemy"
-  console.log("who_turn: " + who_turn)
+  const player_turn = turnActor.type === "player"
 
   return (
     <div>
-      <p>Turn: <span style={turnActor === "player" ? {color: "cornflowerblue"}:{color: "red"}}>{turnActor === "player" ? player.name : "Enemy"}</span></p>
+      <p>Turn: <span style={player_turn ? {color: "cornflowerblue"} : {color: "red"}}> {player_turn ? player.name : "Enemy"} </span></p>
     </div>
   )
 }
