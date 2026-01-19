@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Player } from "./Player/Attributes.js";
 import { Enemy } from "./Enemies/Enemy.js";
 
-function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase }) {
+function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase }) {
 
   // Para não ocorrer erros de escrita
   const POSTURE = {
@@ -51,6 +51,8 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
 
     // Guardar as Instâncias
     setEnemies(enemiesInstances);
+    // Informa ao componente pai que os inimigos existem e pode ser repassado para UI
+    onEnemiesUpdate(enemiesInstances);
 
     console.log("Inimigos foram criados: " + enemiesInstances)
 
@@ -205,8 +207,8 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
     }
 
     // Se o número de mortos é igual ao número de inimigos que continha a batalha acaba, senão, é o próximo turno
-    if (aliveEnemies === 0) { 
-      setPhase("analysing"); 
+    if (aliveEnemies === 0) {
+      setPhase("analysing");
     } else { nextTurn() };
 
   }, [phase])
@@ -290,8 +292,8 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
       // Aplicar a mudança
       mutator(copy);
 
-      // Pede para que a UI atualize as informações acerca do jogador
-      onPlayerUpdate(copy);
+      // Pede para que a UI atualize as informações acerca dos inimigos
+      onEnemiesUpdate(copy);
 
       // Retorna a cópia do jogador que é usada na UI
       return copy;
@@ -362,7 +364,7 @@ function BattleSystem({ onPlayerUpdate, turnActor, setTurnActor, intention, setI
   };
   //#endregion acoes
 
-  // Como o BattleSystem não renderiza nada diretamente
+  // BattleSystem não renderiza nada diretamente, quem faz isso é BattleUI
   return null;
 }
 

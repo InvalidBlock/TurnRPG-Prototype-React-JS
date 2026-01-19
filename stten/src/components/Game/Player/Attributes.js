@@ -2,8 +2,10 @@ export class Player {
 
     constructor({id}) {
         this.id = id;
-        this.type = "player"
+        this.type = "player";
         this.name = "Josias";
+
+        this.sprite = "Hero";
 
         this.dead = false;
         this.posture = "offensive"; // "offensive" | "defensive"

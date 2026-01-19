@@ -1,4 +1,5 @@
 import "./Game.css"
+import "./Game/UI/Actions/Actions.css"
 import { useEffect, useState } from "react"
 
 // UI
@@ -6,6 +7,7 @@ import TurnStats from "./Game/UI/TurnStats"
 import Options from "./Game/UI/Options.jsx"
 // Luta
 import BattleSystem from "./Game/BattleSystem.jsx"
+import BattleUI from "./Game/UI/Battle/BattleUI.jsx"
 // Estatísticas
 import Statistics from "./Game/UI/Statistics.jsx"
 // Actions & Cards
@@ -22,10 +24,14 @@ function Game({ changeScene }) {
   // Jogador
   const [player, setPlayer] = useState(null);
 
+  // Inimigos
+  const [enemies, setEnemies] = useState([]);
+
   // Autor do Turno
   const [turnActor, setTurnActor] = useState(null);
   // Fase
   const [phase, setPhase] = useState("");
+
   /*
 
   /~/~/ PREPARAÇÃO /~/~/
@@ -58,21 +64,27 @@ function Game({ changeScene }) {
     console.log("turnActor was changed!", turnActor)
   }, [turnActor])
 
+  useEffect(() => {
+    console.log("Os inimigos mudaram.", enemies)
+  }, [enemies])
+
   // Intenção declarada
   const [intention, setIntention] = useState(null);
+
+  // Alvo
+  const [selectedTarget, setSelectedTarget] = useState(null)
+
   /*
   A intenção é definida pelo jogador ou inimigo, ela aparecerá da seguinte forma
 
   {
   actor: "player" || "enemy"
   actor_id: "player" || "x"
-  type: "attack" || "defend" || "item"
+  type: "attack" || "defend"
 
   // O null é para caso não seja atacar
   target: "enemy" || "player" || null
   target_id: "x" || null
-  
-  item: "item" || null
   }
   */
 
@@ -95,12 +107,15 @@ function Game({ changeScene }) {
       */}
 
       {/* Char's / Luta */}
-      <div className="battle"><BattleSystem onPlayerUpdate={setPlayer} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} /></div>
+      <BattleSystem onPlayerUpdate={setPlayer} onEnemiesUpdate={setEnemies} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} />
 
       {player && turnActor !== null && <div className="player">
 
         {/* UI Top */}
         <div className="bar-top"><TurnStats turnActor={turnActor} player={player} /><Options /></div>
+
+        {/* Batalha */}
+        <div className="battle"><BattleUI phase={phase} setPhase={setPhase} setSelectedTarget={setSelectedTarget} player={player} enemies={enemies} /></div>
 
         {/* 
         
@@ -108,7 +123,7 @@ function Game({ changeScene }) {
         Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
 
         */}
-        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} /></div>
+        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} phase={phase} setPhase={setPhase} setIntention={setIntention} /></div>
 
         {/* Estátisticas */}
         <div className="statistics"><Statistics player={player} /></div>

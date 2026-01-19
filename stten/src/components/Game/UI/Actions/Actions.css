@@ -1,0 +1,33 @@
+.action-attack{
+    text-shadow: 0px 0px 5px red;
+    transition: all 0.3s ease
+}
+.action-attack:hover{
+    text-shadow: 0px 0px 10px red;
+    transition: all 0.3s ease
+}
+.action-defend{
+    text-shadow: 0px 0px 5px cornflowerblue;
+    transition: all 0.3s ease
+}
+.action-defend:hover{
+    text-shadow: 0px 0px 10px cornflowerblue;
+    transition: all 0.3s ease
+}
+
+.action-attack, .action-defend{
+    background-color: transparent;
+    border: none;
+    transform: scale(1.25);
+    
+    font-size: 1rem;
+    font-family: "Jacquard 12", system-ui;
+
+    color: white;
+    transition: all 0.3s ease
+}
+
+.action-attack:hover, .action-defend:hover{
+    transform: scale(1.6);
+    transition: all 0.3s ease
+}

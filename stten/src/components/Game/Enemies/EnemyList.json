@@ -2,6 +2,7 @@
     "skeleton": {
         "type": "skeleton",
         "name": "Skeleton",
+        "sprite": "Skeleton",
         "health": {
             "max": 4,
             "current": 4
