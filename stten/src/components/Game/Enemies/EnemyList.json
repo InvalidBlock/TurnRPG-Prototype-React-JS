@@ -16,6 +16,10 @@
                 "physical": 2
             },
             "initiative": 1
+        },
+        "ai": {
+            "profile": "dumb",
+            "fear": 0.1
         }
     }
 }

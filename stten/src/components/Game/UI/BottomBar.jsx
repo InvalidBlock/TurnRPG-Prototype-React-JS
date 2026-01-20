@@ -4,7 +4,7 @@ import "./BottomBar.css"
 // Cartas
 import Cards from "./Cards/Cards"
 
-function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention }) {
+function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, selectedTarget}) {
 
     const awaiting_input = phase === "awaiting_input"
     const player_turn = turnActor.type === "player"
@@ -14,11 +14,11 @@ function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention }) {
         // Mudar intenção
         setIntention({
             actor: "player",
-            actor_id: "player",
+            actor_id: turnActor.id,
             type: "attack",
 
-            target: "enemy",
-            target_id: "x",
+            target: selectedTarget,
+            target_id: selectedTarget.id,
         })
 
         // Mudar phase
@@ -30,7 +30,7 @@ function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention }) {
         // Mudar intenção
         setIntention({
             actor: "player",
-            actor_id: "player",
+            actor_id: turnActor.id,
             type: "defend",
 
             target: null,

@@ -115,7 +115,7 @@ function Game({ changeScene }) {
         <div className="bar-top"><TurnStats turnActor={turnActor} player={player} /><Options /></div>
 
         {/* Batalha */}
-        <div className="battle"><BattleUI phase={phase} setPhase={setPhase} setSelectedTarget={setSelectedTarget} player={player} enemies={enemies} /></div>
+        <div className="battle"><BattleUI turnActor={turnActor} selectedTarget={selectedTarget} setSelectedTarget={setSelectedTarget} player={player} enemies={enemies} /></div>
 
         {/* 
         
@@ -123,7 +123,7 @@ function Game({ changeScene }) {
         Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
 
         */}
-        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} phase={phase} setPhase={setPhase} setIntention={setIntention} /></div>
+        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} phase={phase} setPhase={setPhase} setIntention={setIntention} selectedTarget={selectedTarget}/></div>
 
         {/* Estátisticas */}
         <div className="statistics"><Statistics player={player} /></div>

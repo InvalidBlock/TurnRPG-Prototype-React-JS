@@ -1,19 +1,60 @@
-.battleUI-player {
-    --progress_bg: #2b2b2b;
-    --progress_accent: red;
+.battleUI {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
+.battleUI-player, .battleUI-enemies {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    
+    position: absolute;
+}
+
+.battleUI-player {
+    left: 0%;
+
+    height: 392px;
+    width: 49.2vw;
+}
+
+.battleUI-enemies {
+    right: 0%;
+
+    height: 392px;
+    width: 49.2vw;
+}
+
+.battleUI-player{
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    gap: 5px;
 }
 
-.battleUI-player .healthBar {
+.battleUI-enemies {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.battleUI-player .healthBar,
+.battleUI-enemies .healthBar {
     width: 92px;
     height: 12px;
     background-color: #141414;
     border-radius: 5px;
     overflow: hidden;
     border: 5px solid black;
+    
+    position: relative;
+    bottom: 5px;
+}
+
+.battleUI-enemies button {
+    background: none;
+    border: none;
 }

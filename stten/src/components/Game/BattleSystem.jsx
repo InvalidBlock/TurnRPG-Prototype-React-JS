@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use, useEffectEvent } from "react";
 import { Player } from "./Player/Attributes.js";
 import { Enemy } from "./Enemies/Enemy.js";
 
@@ -118,6 +118,36 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
   }, [phase, player, enemies])
 
+  ///////////////////////////
+  //>>> AWAITING INPUT <<< //
+  ///////////////////////////
+
+  // Esse useEffect é para caso o inimigo tenha que definir uma intenção
+  useEffect(() => {
+    // Se a phase não for de esperar a intenção, retorne
+    if (!turnActor) return;
+    if (phase !== "awaiting_input" && turnActor.type !== "enemy") return;
+
+    // Verificar se o inimigo existe
+    const enemy = enemies.find(e => e.id === turnActor.id);
+    // Se não existe
+    if (!enemy) {
+      console.log("BattleSystem: Erro 404! Inimigo não encontrado ou não existente", enemy); 
+      return;
+    }
+    
+    // Esperar o inimigo definir a intenção
+    // É passado o jogador e seus aliados (inimigos)
+    const enemyIntention = enemy.AI({ player })
+
+    // Se a intenção do inimigo ficou definida
+    if (enemyIntention) {
+      setIntention(enemyIntention);
+      setPhase("action");
+    }
+
+  }, [phase, turnActor, enemies])
+
   ///////////////////
   //>>> ACTION <<< //
   ///////////////////
@@ -131,27 +161,38 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     console.log("Intenção", intention)
 
     // Verificar se não houve falta de informações que podem comprometer a ação
-    if (!intention.actor || !intention.target) {
+    if (!intention.actor) {
       console.warn("Faltam informações cruciais na intenção", intention);
       setIntention(null);
       return;
     }
 
+    console.log("A intenção recebida foi:", intention)
+    console.log("Definindo autor e alvo")
+
     // Ele resolve as strings para defini-las como instâncias
     const actor = intention.actor === "player"
       ? player
       : enemies.find(e => e.id === intention.actorId);
-    const actorId = intention.actorId;
+    console.log("Autor:", actor)
+
+    const actorId = actor.id;
+    console.log("Autor ID:", actorId)
+
     const target = intention.target === "player"
       ? player
-      : enemies.find(e => e.id === intention.targetId);
-    const targetId = intention.targetId;
+      : enemies.find(e => e === intention.target);
+    console.log("Alvo:", target)
+
+    const targetId = target.id;
+    console.log("Alvo ID:", targetId)
 
     // Verifica que tipo de intenção o autor (actor) declarou
     switch (intention.type) {
       // Se ele atacar
       case "attack":
         // Chama a função de atacar
+        console.log(`attack(\n Attacker: ${actor}, ${actorId} \n Defender: ${target}, ${targetId}\n)`)
         attack(actor, actorId, target, targetId);
         break;
       // Se ele defender
@@ -237,6 +278,11 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/
   */
   //#region atualizacao-instancias
+
+  // Informar componente pai sobre alterações
+  useEffect(() => { player && onPlayerUpdate(player) }, [player])
+  useEffect(() => { enemies.length > 0 && onEnemiesUpdate(enemies) }, [enemies])
+
   // Função para atualizar o jogador, mutator seria a atualização
   function updatePlayer(mutator) {
 
@@ -259,9 +305,6 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
       // Aplicar a mudança
       mutator(copy);
-
-      // Pede para que a UI atualize as informações acerca do jogador
-      onPlayerUpdate(copy);
 
       // Retorna a cópia do jogador que é usada na UI
       return copy;
@@ -291,9 +334,6 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
       // Aplicar a mudança
       mutator(copy);
-
-      // Pede para que a UI atualize as informações acerca dos inimigos
-      onEnemiesUpdate(copy);
 
       // Retorna a cópia do jogador que é usada na UI
       return copy;
