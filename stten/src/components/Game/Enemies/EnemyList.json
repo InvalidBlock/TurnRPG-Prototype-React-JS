@@ -19,7 +19,7 @@
         },
         "ai": {
             "profile": "dumb",
-            "fear": 0.1
+            "fear": -1
         }
     }
 }
