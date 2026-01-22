@@ -79,12 +79,12 @@ function Game({ changeScene }) {
 
   {
   actor: "player" || "enemy"
-  actor_id: "player" || "x"
+  actorId: "player" || "x"
   type: "attack" || "defend"
 
   // O null é para caso não seja atacar
   target: "enemy" || "player" || null
-  target_id: "x" || null
+  targetId: "x" || null
   }
   */
 
@@ -107,7 +107,7 @@ function Game({ changeScene }) {
       */}
 
       {/* Char's / Luta */}
-      <BattleSystem onPlayerUpdate={setPlayer} onEnemiesUpdate={setEnemies} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} />
+      <BattleSystem onPlayerUpdate={setPlayer} onEnemiesUpdate={setEnemies} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} changeScene={changeScene}/>
 
       {player && turnActor !== null && <div className="player">
 
@@ -123,7 +123,7 @@ function Game({ changeScene }) {
         Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
 
         */}
-        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} phase={phase} setPhase={setPhase} setIntention={setIntention} selectedTarget={selectedTarget}/></div>
+        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} phase={phase} setPhase={setPhase} setIntention={setIntention} selectedTarget={selectedTarget} /></div>
 
         {/* Estátisticas */}
         <div className="statistics"><Statistics player={player} /></div>

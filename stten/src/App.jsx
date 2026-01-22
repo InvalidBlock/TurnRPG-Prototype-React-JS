@@ -13,9 +13,16 @@ function App() {
   // Gerenciamento de cenas
   const [scene, setScene] = useState("menu");
 
+  // Uma função para mudar de cena, ela é passada como props e também é usada para o debug
+  const changeScene = (newScene) => {
+    console.log("Mudando cena para:", newScene);
+    setScene(newScene);
+  };
+
   // Verifica se está em modo DEV e se o usuário está autenticado
   const devMode = DEV_MODE;
   const [authenticated, setAuthenticaded] = useState(getDevCredentials().authenticated);
+
 
   if (devMode && !authenticated) {
     return <Auth onSuccess={() => setAuthenticaded(true)} />;
@@ -23,8 +30,8 @@ function App() {
 
   return (
     <>
-      {scene === "menu" && <MainMenu changeScene={(newScene) => () => setScene(newScene)} />}
-      {scene === "game" && <Game changeScene={(newScene) => () => setScene(newScene)}/>}
+      {scene === "menu" && <MainMenu changeScene={changeScene} />}
+      {scene === "game" && <Game changeScene={changeScene} />}
     </>
   );
 

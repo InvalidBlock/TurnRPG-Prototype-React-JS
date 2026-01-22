@@ -14,11 +14,11 @@ function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, sel
         // Mudar intenção
         setIntention({
             actor: "player",
-            actor_id: turnActor.id,
+            actorId: turnActor.id,
             type: "attack",
 
             target: selectedTarget,
-            target_id: selectedTarget.id,
+            targetId: selectedTarget.id,
         })
 
         // Mudar phase
@@ -30,11 +30,11 @@ function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, sel
         // Mudar intenção
         setIntention({
             actor: "player",
-            actor_id: turnActor.id,
+            actorId: turnActor.id,
             type: "defend",
 
             target: null,
-            target_id: null,
+            targetId: null,
         })
 
         // Mudar phase

@@ -4,7 +4,7 @@ function MainMenu({ changeScene }) {
         <div className="title"><h1> Sovereing Tower: The Eternal Night </h1></div>
         <br /><br /><br /><br /><br /><br /><br />
         <div className="options">
-            <button className="play-button" onClick={changeScene("game")}> Iniciar Jogo </button>
+            <button className="play-button" onClick={() => changeScene("game")}> Iniciar Jogo </button>
         </div>
     </div>
   )

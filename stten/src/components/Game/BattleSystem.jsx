@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, use, useEffectEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Player } from "./Player/Attributes.js";
 import { Enemy } from "./Enemies/Enemy.js";
 
-function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase }) {
+function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene }) {
 
   // Para não ocorrer erros de escrita
   const POSTURE = {
@@ -64,7 +64,8 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
   // Para caso o jogador morra ou escolha resetar a run
   function resetRun() {
-    console.log("O JOGADOR MORREU, a lógica desta função vai ser feita posteriormente")
+    console.warn("O JOGADOR MORREU, a lógica desta função vai ser feita posteriormente")
+    changeScene("menu");
   }
 
   /*
@@ -132,19 +133,33 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     const enemy = enemies.find(e => e.id === turnActor.id);
     // Se não existe
     if (!enemy) {
-      console.log("BattleSystem: Erro 404! Inimigo não encontrado ou não existente", enemy); 
+      console.log("BattleSystem: Inimigo não encontrado ou não existente", enemy);
       return;
     }
-    
-    // Esperar o inimigo definir a intenção
-    // É passado o jogador e seus aliados (inimigos)
-    const enemyIntention = enemy.AI({ player })
 
-    // Se a intenção do inimigo ficou definida
-    if (enemyIntention) {
+    // Função assíncrona para criar delay e não acontecer tudo muito rápido visualmente para o jogador
+    const processEnemyTurn = async () => {
+      console.log("Inimigo está pensando...");
+
+      const delay = 200 + Math.random() * 1300;
+      // Aguarda o delay antes de executar a IA (simula tempo de decisão)
+      await new Promise(resolve => setTimeout(resolve, delay));
+
+      const enemyIntention = enemy.AI({ player });
+
+      // Mostrar a intenção no console
+      console.log("Intenção do inimigo definida:", enemyIntention);
+
+      // Guardar intenção e avançar fase
       setIntention(enemyIntention);
+
+      // Espera um pouco antes de passar para a ação
+      await new Promise(resolve => setTimeout(resolve, 250));
       setPhase("action");
-    }
+    };
+
+    // Chama a função assíncrona
+    processEnemyTurn();
 
   }, [phase, turnActor, enemies])
 
@@ -176,7 +191,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       : enemies.find(e => e.id === intention.actorId);
     console.log("Autor:", actor)
 
-    const actorId = actor.id;
+    const actorId = intention.actorId;
     console.log("Autor ID:", actorId)
 
     const target = intention.target === "player"
@@ -184,7 +199,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       : enemies.find(e => e === intention.target);
     console.log("Alvo:", target)
 
-    const targetId = target.id;
+    const targetId = intention.targetId;
     console.log("Alvo ID:", targetId)
 
     // Verifica que tipo de intenção o autor (actor) declarou
@@ -263,6 +278,8 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     turnQueueRef.current.push(finished);
     // Muda o autor do turno para o novo primeiro elemento
     setTurnActor(turnQueueRef.current[0]);
+
+
 
     // Mudar a phase
     setPhase("awaiting_input")
@@ -367,6 +384,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
     // Verificar se o ataque vai ser normal ou critico
     const critical = Math.random() < attacker.stats.dmg.critical_chance;
+    critical && console.log(">>>>>> CRITOU!!!!!")
 
     // O multiplicador é fixo, ou seja, o critico sempre será 180% do dano
     // Essa variável é o dano que vai ser passado para o defensor
