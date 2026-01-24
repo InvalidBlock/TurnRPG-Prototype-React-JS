@@ -27,7 +27,7 @@ export class Player {
         };
 
         // Para visualização via console
-        console.log(this.name + " foi criado!");
+        console.log(this.name + " was created!");
         console.log(this);
     }
 
@@ -57,7 +57,7 @@ export class Player {
             this.dead = true;
 
             // Para visualização via console
-            console.log(this.name + ": Morreu");
+            console.log(this.name + ": Died");
         }
     }
 
@@ -73,7 +73,7 @@ export class Player {
         this.stats.res.defense = 1;
 
         // Para visualização via console
-        console.log(this.name + ": Resetado para início de uma nova run");
+        console.log(this.name + ": Reset to start of a new run");
         console.log(this);
     }
 }

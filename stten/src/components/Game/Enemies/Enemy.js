@@ -21,7 +21,7 @@ export class Enemy {
         this.ai = { ...data.ai }
 
         // Para visualização via console
-        console.log("O inimigo " + this.name + " ( " + this.id + " ) foi criado!")
+        console.log("The enemy " + this.name + " ( " + this.id + " ) was created!")
         console.log(this, [this.type, this.name, this.health, this.stats, this.ai])
     }
 
@@ -48,7 +48,7 @@ export class Enemy {
         }
 
         // Diminua a vida pelo dano recebido
-        this.current_hp -= damage_taken
+        this.health.current -= damage_taken
 
         // Para visualização via console
         console.log(this.name + " ( " + this.type + "," + this.id + " ): ID = " + this.id)
@@ -57,12 +57,12 @@ export class Enemy {
         console.log(this.name + " ( " + this.type + "," + this.id + " ): Damage taken = " + damage_taken + "( amount: " + amount + " )")
 
         // Caso o dano seja fatal, defina como morto
-        if (this.current_hp <= 0) {
+        if (this.health.current <= 0) {
 
             // Para visualização via console
-            console.log(this.name + " ( " + this.type + "," + this.id + " ): Morreu")
+            console.log(this.name + " ( " + this.type + "," + this.id + " ): Died")
 
-            this.current_hp = 0;
+            this.health.current = 0;
             this.dead = true;
         }
 

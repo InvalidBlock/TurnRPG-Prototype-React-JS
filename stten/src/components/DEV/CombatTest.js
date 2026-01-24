@@ -5,7 +5,7 @@ import { Player } from "../Game/Player/Attributes.js";
 import { Enemy } from "../Game/Enemies/Enemy.js";
 
 console.clear();
-console.log("=== TESTE DE DANO DIRETO ===");
+console.log("=== DIRECT DAMAGE TEST ===");
 
 // Instanciar
 const player = new Player();
@@ -13,75 +13,75 @@ const enemy = new Enemy("skeleton");
 
 // Estado inicial
 // Teste com postura ofensiva
-console.log("\n--- TESTE COM POSTURA OFENSIVA ---");
-console.log("\n--- ESTADO INICIAL ---");
+console.log("\n--- TEST WITH OFFENSIVE POSTURE ---");
+console.log("\n--- INITIAL STATE ---");
 console.log("Player HP:", player.health.current);
 console.log("Player Posture:", player.posture);
 console.log("Enemy HP:", enemy.current_hp);
 console.log("Enemy Posture:", enemy.posture);
 
-// Player ataca Enemy
-console.log("\n>>> Player ataca Enemy");
+// Player attacks Enemy
+console.log("\n>>> Player attacks Enemy");
 player.attack(enemy);
 
-// Enemy ataca Player
-console.log("\n>>> Enemy ataca Player");
+// Enemy attacks Player
+console.log("\n>>> Enemy attacks Player");
 enemy.attack(player);
 
 // Estado final
-console.log("\n--- ESTADO FINAL ---");
+console.log("\n--- FINAL STATE ---");
 console.log("Player HP:", player.health.current);
 console.log("Enemy HP:", enemy.current_hp);
 
 // Teste com postura defensiva
-console.log("\n--- TESTE COM POSTURA DEFENSIVA ---");
+console.log("\n--- TEST WITH DEFENSIVE POSTURE ---");
 
 player.posture = "offensive";
 enemy.posture = "defensive";
 
-console.log("\n--- ESTADO INICIAL ---");
+console.log("\n--- INITIAL STATE ---");
 console.log("Player HP:", player.health.current);
 console.log("Player Posture:", player.posture);
 console.log("Enemy HP:", enemy.current_hp);
 console.log("Enemy Posture:", enemy.posture);
 
-// Player ataca Enemy
-console.log("\n>>> Player ataca Enemy");
+// Player attacks Enemy
+console.log("\n>>> Player attacks Enemy");
 player.attack(enemy);
 
-// Enemy ataca Player
-console.log("\n>>> Enemy ataca Player");
+// Enemy attacks Player
+console.log("\n>>> Enemy attacks Player");
 enemy.attack(player);
 
 // Estado final
-console.log("\n--- ESTADO FINAL ---");
+console.log("\n--- FINAL STATE ---");
 console.log("Player HP:", player.health.current);
 console.log("Enemy HP:", enemy.current_hp);
 
 // Trocam posturas
-console.log("\n>>> Player troca postura");
-console.log("\n>>> Enemy troca postura");
+console.log("\n>>> Player changes posture");
+console.log("\n>>> Enemy changes posture");
 
 player.posture = "defensive";
 enemy.posture = "offensive";
 
-console.log("\n--- ESTADO INICIAL ---");
+console.log("\n--- INITIAL STATE ---");
 console.log("Player HP:", player.health.current);
 console.log("Player Posture:", player.posture);
 console.log("Enemy HP:", enemy.current_hp);
 console.log("Enemy Posture:", enemy.posture);
 
-// Player ataca Enemy
-console.log("\n>>> Player ataca Enemy");
+// Player attacks Enemy
+console.log("\n>>> Player attacks Enemy");
 player.attack(enemy);
 
-// Enemy ataca Player
-console.log("\n>>> Enemy ataca Player");
+// Enemy attacks Player
+console.log("\n>>> Enemy attacks Player");
 enemy.attack(player);
 
 // Estado final
-console.log("\n--- ESTADO FINAL ---");
+console.log("\n--- FINAL STATE ---");
 console.log("Player HP:", player.health.current);
 console.log("Enemy HP:", enemy.current_hp);
 
-console.log("\n=== FIM DO TESTE ===");
+console.log("\n=== END OF TEST ===");

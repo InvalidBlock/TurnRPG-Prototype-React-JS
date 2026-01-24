@@ -9,6 +9,13 @@ import { getDevCredentials, setDevCredentials, DEV_MODE } from "../../components
 const GAME_ID = "1040406";
 
 // Chave privada do jogo (NÃO deve ir para o front-end em produção)
+/*
+
+A chave da API está exposta intencionalmente para fins acadêmicos e de avaliação.
+Em caso de continuidade do projeto ou cenário de produção, uma nova chave seria gerada e armazenada em um arquivo .env, 
+ignorado pelo Git via .gitignore e acessado por meio de variáveis de ambiente.
+
+*/
 const PRIVATE_KEY = "be40e9583dbadc8f935fdf9035b078ad";
 
 // URL base da API da Game Jolt (versão 1.2)
@@ -61,8 +68,8 @@ function callApi(endpoint, params) {
       return data;
     })
     .catch(function (error) {
-      // Em caso de erro de rede ou falha na requisição
-      console.error("Erro na API Game Jolt:", error);
+      // In case of network error or request failure
+      console.error("Error in Game Jolt API:", error);
     });
 }
 

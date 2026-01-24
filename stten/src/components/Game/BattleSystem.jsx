@@ -41,7 +41,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     // Informa ao componente pai que o jogador existe e pode ser repassado para UI
     onPlayerUpdate(instance);
 
-    console.log("Jogador foi criado: " + instance)
+    console.log("Player was created: " + instance)
 
     // Criar os inimigos
     const enemiesInstances = [
@@ -54,7 +54,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     // Informa ao componente pai que os inimigos existem e pode ser repassado para UI
     onEnemiesUpdate(enemiesInstances);
 
-    console.log("Inimigos foram criados: " + enemiesInstances)
+    console.log("Enemies were created: " + enemiesInstances)
 
     // Mudar phase para montar a queue
     setPhase("queue")
@@ -64,7 +64,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
   // Para caso o jogador morra ou escolha resetar a run
   function resetRun() {
-    console.warn("O JOGADOR MORREU, a lógica desta função vai ser feita posteriormente")
+    console.warn("THE PLAYER DIED, the logic for this function will be implemented later")
     changeScene("menu");
   }
 
@@ -81,18 +81,24 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/
   */
 
+  // Por mais que seja feio ele é um separador de render
+  console.log("/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/\n\n\n")
+
   //////////////////
   //>>> QUEUE <<< //
   //////////////////
   useEffect(() => {
 
     // Se não for a phase de queue e não houver instâncias como jogador e inimigo, retorne
-    if (phase !== "queue" || !player || enemies.length === 0) return;
+    if (phase !== "queue") return console.log("Isn't 'queue' phase");
+    console.log("Is 'queue' phase!");
+    if (!player) return console.error("Don't have a player", player);
+    if (enemies.length === 0) return console.error("Don't have enemies", enemies);
 
     // Para visualizar os inimigos no turno
-    console.log(`O useEffect de inteção foi chamado com o phase no estado de ${phase}!!! \n E os seguintes atores na batalha.`)
-    console.log("Jogador", player)
-    console.log("Inimigos", enemies)
+    console.log(`The intention useEffect was called with the phase in state ${phase}!!! \n And the following actors in the battle.`)
+    console.log("Player", player)
+    console.log("Enemies", enemies)
 
     // Cria um Array com todos os atores
     const actors = [player, ...enemies];
@@ -109,7 +115,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
       // Com os atores na fila, eles são organizados baseados em quem tem a maior iniciativa
     })).sort((a, b) => b.initiative - a.initiative);
-    console.log(`BattleSystem: A queue ficou da seguinte maneira!`, turnQueueRef.current);
+    console.log(`BattleSystem: The queue turned out as follows!`, turnQueueRef.current);
 
     // Mostra para UI e Lógica quem é o autor do turno atual
     setTurnActor(turnQueueRef.current[0]);
@@ -123,23 +129,36 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   //>>> AWAITING INPUT <<< //
   ///////////////////////////
 
+  const enemyThinking = useRef(false);
+
   // Esse useEffect é para caso o inimigo tenha que definir uma intenção
   useEffect(() => {
     // Se a phase não for de esperar a intenção, retorne
-    if (!turnActor) return;
-    if (phase !== "awaiting_input" && turnActor.type !== "enemy") return;
+    if (phase !== "awaiting_input") return console.log("Isn't 'awaiting_input phase!'");
+    console.log("Is 'awaiting_input' phase!")
+    if (!turnActor) return console.error("Don't have turnActor to 'awaiting_input' phase!");
+
+    if (!enemyThinking.current) enemyTurn(); 
+
+  }, [phase, turnActor])
+
+  function enemyTurn() {
+    if (enemyThinking.current) return console.warn("The enemy is already thinking!");
 
     // Verificar se o inimigo existe
     const enemy = enemies.find(e => e.id === turnActor.id);
     // Se não existe
     if (!enemy) {
-      console.log("BattleSystem: Inimigo não encontrado ou não existente", enemy);
+      console.log("BattleSystem: Enemy not found or does not exist", enemy);
       return;
     }
 
     // Função assíncrona para criar delay e não acontecer tudo muito rápido visualmente para o jogador
     const processEnemyTurn = async () => {
-      console.log("Inimigo está pensando...");
+
+      // Inimigo está pensando?
+      console.log("Enemy is thinking...");
+      enemyThinking.current = true;
 
       const delay = 200 + Math.random() * 1300;
       // Aguarda o delay antes de executar a IA (simula tempo de decisão)
@@ -148,7 +167,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       const enemyIntention = enemy.AI({ player });
 
       // Mostrar a intenção no console
-      console.log("Intenção do inimigo definida:", enemyIntention);
+      console.log("Enemy intention defined:", enemyIntention);
 
       // Guardar intenção e avançar fase
       setIntention(enemyIntention);
@@ -156,12 +175,14 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       // Espera um pouco antes de passar para a ação
       await new Promise(resolve => setTimeout(resolve, 250));
       setPhase("action");
+
+      // Inimigo está pensando?
+      enemyThinking.current = false
     };
 
     // Chama a função assíncrona
     processEnemyTurn();
-
-  }, [phase, turnActor, enemies])
+  }
 
   ///////////////////
   //>>> ACTION <<< //
@@ -169,38 +190,40 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   useEffect(() => {
 
     // Se não houver intenção declarada ou não ser a phase de ação, retorne
-    if (phase !== "action" || !intention) return;
+    if (phase !== "action") return console.log("Isn't 'action' phase");
+    console.log("Is action phase")
+    if (intention == {} || intention == null) return console.error("Don't have a intention!", intention);
 
     // Para visualizar os inimigos no turno
-    console.log(`O useEffect de inteção foi chamado com o phase no estado de ${phase}!!!`)
-    console.log("Intenção", intention)
+    console.log(`The intention useEffect was called with the phase in state ${phase}!!!`)
+    console.log("Intention", intention)
 
     // Verificar se não houve falta de informações que podem comprometer a ação
     if (!intention.actor) {
-      console.warn("Faltam informações cruciais na intenção", intention);
+      console.warn("Missing crucial information in the intention", intention);
       setIntention(null);
       return;
     }
 
-    console.log("A intenção recebida foi:", intention)
-    console.log("Definindo autor e alvo")
+    console.log("The received intention was:", intention)
+    console.log("Defining actor and target")
 
     // Ele resolve as strings para defini-las como instâncias
     const actor = intention.actor === "player"
       ? player
       : enemies.find(e => e.id === intention.actorId);
-    console.log("Autor:", actor)
+    console.log("Actor:", actor)
 
     const actorId = intention.actorId;
-    console.log("Autor ID:", actorId)
+    console.log("Actor ID:", actorId)
 
     const target = intention.target === "player"
       ? player
       : enemies.find(e => e === intention.target);
-    console.log("Alvo:", target)
+    console.log("Target:", target)
 
     const targetId = intention.targetId;
-    console.log("Alvo ID:", targetId)
+    console.log("Target ID:", targetId)
 
     // Verifica que tipo de intenção o autor (actor) declarou
     switch (intention.type) {
@@ -217,8 +240,9 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
         break;
     };
 
-    // Ao finalizar verificação, retorne intenção como null
-    setIntention(null);
+    // Ao finalizar verificação, retorne intenção como vazia
+    setIntention({});
+
     // Mudar a fase
     setPhase("end_turn")
 
@@ -228,11 +252,10 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   //>>> END TURN <<< //
   /////////////////////
   useEffect(() => {
-    // Como ele tem apenas phase de dependência decidi colocar aqui o console.log que nos mostra a phase atual
-    console.log(`BattleSystem: Phase = ${phase}`);
 
     // Se não for a fase de final do turno
-    if (phase !== "end_turn") return;
+    if (phase !== "end_turn") return console.log("Isn't 'end_turn' phase");
+    console.log("Is 'end_turn' phase!")
 
     // Posteriormente vai ter aplicação de danos de estado como fogo, veneno
     // Eles serão aplicados aqui, antes da verificação, pois o jogador pode morrer por eles depois de ter matado os inimigos
@@ -278,8 +301,6 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     turnQueueRef.current.push(finished);
     // Muda o autor do turno para o novo primeiro elemento
     setTurnActor(turnQueueRef.current[0]);
-
-
 
     // Mudar a phase
     setPhase("awaiting_input")
@@ -384,7 +405,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
     // Verificar se o ataque vai ser normal ou critico
     const critical = Math.random() < attacker.stats.dmg.critical_chance;
-    critical && console.log(">>>>>> CRITOU!!!!!")
+    critical && console.log(">>>>>> CRITICAL HIT!!!!!")
 
     // O multiplicador é fixo, ou seja, o critico sempre será 180% do dano
     // Essa variável é o dano que vai ser passado para o defensor
@@ -401,7 +422,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
         enemy.takeDamage(final_damage);
       });
     };
-    console.log(`${attacker.name}: Atacou ${defender.name} e ${critical ? "critou dando " : "deu "}${final_damage}`)
+    console.log(`${attacker.name}: Attacked ${defender.name} and ${critical ? "critically hit dealing " : "dealt "}${final_damage}`)
 
   }
 
