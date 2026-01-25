@@ -4,8 +4,8 @@
         "name": "Skeleton",
         "sprite": "Skeleton",
         "health": {
-            "max": 4,
-            "current": 4
+            "max": 6,
+            "current": 6
         },
         "stats": {
             "res": {

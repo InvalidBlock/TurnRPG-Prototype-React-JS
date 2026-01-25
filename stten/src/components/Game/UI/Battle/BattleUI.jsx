@@ -27,7 +27,7 @@ function BattleUI({ turnActor, selectedTarget,setSelectedTarget, player, enemies
             key={enemy.id} 
             onClick={() => setSelectedTarget(enemy)} 
             disabled={enemy.health.current <= 0 || turnActor.type !== "player"}
-            style={selectedTarget === enemy ? {transform: "scale(1.25)", transition: "all 0.3s ease", paddingBottom:"20px"} : {transform: "scale(1)", transition: "all 0.3s ease"}}
+            style={selectedTarget === enemy || turnActor.id === enemy.id ? {transform: "scale(1.25)", transition: "all 0.3s ease", paddingBottom:"20px"} : {transform: "scale(1)", transition: "all 0.3s ease"}}
             >
               <div className="healthBar">
               <div style={{width: `${(enemy.health.current / enemy.health.max) * 100}%`, height: "100%", backgroundColor: "red", transition: "width 0.3s"}} />

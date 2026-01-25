@@ -107,7 +107,7 @@ function Game({ changeScene }) {
       */}
 
       {/* Char's / Luta */}
-      <BattleSystem onPlayerUpdate={setPlayer} onEnemiesUpdate={setEnemies} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} changeScene={changeScene}/>
+      <BattleSystem onPlayerUpdate={setPlayer} onEnemiesUpdate={setEnemies} turnActor={turnActor} setTurnActor={setTurnActor} intention={intention} setIntention={setIntention} phase={phase} setPhase={setPhase} changeScene={changeScene} enemies={enemies} player={player}/>
 
       {player && turnActor !== null && <div className="player">
 

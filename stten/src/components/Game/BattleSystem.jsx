@@ -1,24 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+
+////////////////////////
+// >>> Instâncias <<< //
+////////////////////////
 import { Player } from "./Player/Attributes.js";
 import { Enemy } from "./Enemies/Enemy.js";
 
-function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene }) {
+//////////////////////
+// >>> Sistemas <<< //
+//////////////////////
+import { applyDamage } from "./Systems/sys_ApplyDamage.js"
+import { enemyAI } from "./Systems/sys_EnemyAI.js"
+import { setPosture } from "./Systems/sys_SetPosture.js"
 
-  // Para não ocorrer erros de escrita
+function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene, enemies, player }) {
+
+  // Nomes das posturas predefinidos para não ocorrer problemas
   const POSTURE = {
     OFFENSIVE: "offensive",
     DEFENSIVE: "defensive"
   }
-
-  /* 
-  ==========================
-  --- >>> Instâncias <<< ---
-  ==========================
-  */
-  // Jogador
-  const [player, setPlayer] = useState(null);
-  // Inimigo
-  const [enemies, setEnemies] = useState([]);
 
   /* 
   ======================
@@ -36,8 +37,6 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
     // Criar jogador
     const instance = new Player({ id: actorsCounter++ });
-    // Guardar a Instância
-    setPlayer(instance);
     // Informa ao componente pai que o jogador existe e pode ser repassado para UI
     onPlayerUpdate(instance);
 
@@ -49,8 +48,6 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       new Enemy({ type: "skeleton", id: actorsCounter++ })
     ]
 
-    // Guardar as Instâncias
-    setEnemies(enemiesInstances);
     // Informa ao componente pai que os inimigos existem e pode ser repassado para UI
     onEnemiesUpdate(enemiesInstances);
 
@@ -83,6 +80,13 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
   // Por mais que seja feio ele é um separador de render
   console.log("/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/\n\n\n")
+
+  ////////////////////
+  //>>> Creating <<<//
+  ////////////////////
+  function NewBattle() {
+
+  }
 
   //////////////////
   //>>> QUEUE <<< //
@@ -133,12 +137,22 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
   // Esse useEffect é para caso o inimigo tenha que definir uma intenção
   useEffect(() => {
+
+    console.log("AWAITING INPUT CHECK", {
+      phase,
+      turnActor,
+      enemyThinking: enemyThinking.current,
+      queue: turnQueueRef.current
+    });
+
     // Se a phase não for de esperar a intenção, retorne
     if (phase !== "awaiting_input") return console.log("Isn't 'awaiting_input phase!'");
     console.log("Is 'awaiting_input' phase!")
     if (!turnActor) return console.error("Don't have turnActor to 'awaiting_input' phase!");
 
-    if (!enemyThinking.current) enemyTurn(); 
+    if (turnActor.type === "enemy" && !enemyThinking.current) {
+      enemyTurn();
+    }
 
   }, [phase, turnActor])
 
@@ -164,7 +178,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       // Aguarda o delay antes de executar a IA (simula tempo de decisão)
       await new Promise(resolve => setTimeout(resolve, delay));
 
-      const enemyIntention = enemy.AI({ player });
+      const enemyIntention = enemyAI(player, enemy);
 
       // Mostrar a intenção no console
       console.log("Enemy intention defined:", enemyIntention);
@@ -174,10 +188,11 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
       // Espera um pouco antes de passar para a ação
       await new Promise(resolve => setTimeout(resolve, 250));
-      setPhase("action");
 
       // Inimigo está pensando?
       enemyThinking.current = false
+
+      setPhase("action");
     };
 
     // Chama a função assíncrona
@@ -192,7 +207,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     // Se não houver intenção declarada ou não ser a phase de ação, retorne
     if (phase !== "action") return console.log("Isn't 'action' phase");
     console.log("Is action phase")
-    if (intention == {} || intention == null) return console.error("Don't have a intention!", intention);
+    if (!intention) return console.error("Don't have a intention!", intention);
 
     // Para visualizar os inimigos no turno
     console.log(`The intention useEffect was called with the phase in state ${phase}!!!`)
@@ -219,7 +234,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
     const target = intention.target === "player"
       ? player
-      : enemies.find(e => e === intention.target);
+      : enemies.find(e => e.id === intention.targetId);
     console.log("Target:", target)
 
     const targetId = intention.targetId;
@@ -236,7 +251,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       // Se ele defender
       case "defend":
         // Chama a função de defender
-        defend(actor, actorId);
+        defend(actorId);
         break;
     };
 
@@ -251,6 +266,10 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   /////////////////////
   //>>> END TURN <<< //
   /////////////////////
+
+  // BattleEnd existe para não passar as coisas sem verificar o array com o inimigo excluido de fato
+  const battleEnd = useRef(false);
+
   useEffect(() => {
 
     // Se não for a fase de final do turno
@@ -266,31 +285,47 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       return;
     }
 
-    // Cria uma váriavel que retorna apenas os inimigos mortos
-    const deadEnemies = enemies.filter(e => e.dead)
-    const aliveEnemies = enemies.length - deadEnemies.length;
+    // Pega uma quantidade de inimigos vivos
+    const aliveEnemys = enemies.filter(e => e.dead === false)
+
+    // Conta a quantidade de inimigos e pegue seus id's
+    // Ele filtra retorna um array com inimigos mortos e mapea pegando os id's dos mortos
+    const deadEnemies = enemies.filter(e => e.dead).map(e => e.id);
 
     // Se houver mortos
     if (deadEnemies.length > 0) {
 
-      // Tira eles como instância
-      setEnemies(prev =>
-        prev.filter(enemy => !enemy.dead)
-      );
+      // É removido eles como instância
+      // Primeiro é filtrado os inimigos que contém a id do morto
+      onEnemiesUpdate(prev => prev.filter(e => !deadEnemies.includes(e.id)));
 
-      // Tira eles da queue
-      turnQueueRef.current = turnQueueRef.current.filter(
-        entry => !deadEnemies.some(e => e.id === entry.id)
-      );
+      // Remove da queue o inimigo com a id filtrando que inimigos contém ela
+      turnQueueRef.current = turnQueueRef.current.filter(entry => !deadEnemies.includes(entry.id));
 
+      // Se o inimigo morreu no turno atual por conta de algum estado (veneno, fogo, ...)
+      if (deadEnemies.includes(turnActor.id)) nextTurn();
+    
     }
 
-    // Se o número de mortos é igual ao número de inimigos que continha a batalha acaba, senão, é o próximo turno
-    if (aliveEnemies === 0) {
-      setPhase("analysing");
-    } else { nextTurn() };
+    // Se não há inimigos vivos
+    if (aliveEnemys.length === 0) {
+      battleEnd.current = true;
+    }
 
-  }, [phase])
+    // Após ser verificado que a luta acabou, se espera um re-render com o array de inimigos vazios para assim prosseguir a batalha
+    if (battleEnd.current) {
+      setPhase("analysing");
+      // Então a batalha acabou, prosseguiremos com a análise e retornaremos com a váriavel false para a próxima batalha
+      battleEnd.current = false
+      console.warn("A batalha acabou")
+      console.log("Enemies", enemies)
+      console.log("Queue", turnQueueRef.current)
+      return;
+    }
+
+    nextTurn()
+
+  }, [phase, enemies])
 
   // Função de avançar turno
   function nextTurn() {
@@ -311,71 +346,40 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/
   Função para atualizar jogador e inimigos
   
-  updatePlayer(mutator)
-  updateEnemy(enemyId, mutator)
+  updatePlayer(update)
+  updateEnemy(enemyId, update)
   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/
   */
   //#region atualizacao-instancias
 
-  // Informar componente pai sobre alterações
-  useEffect(() => { player && onPlayerUpdate(player) }, [player])
-  useEffect(() => { enemies.length > 0 && onEnemiesUpdate(enemies) }, [enemies])
-
-  // Função para atualizar o jogador, mutator seria a atualização
-  function updatePlayer(mutator) {
+  // Função para atualizar o jogador, o update seria a atualização, no caso o jogador com os novos dados
+  function updatePlayer(update) {
 
     /*
       setPlayer recebe uma função.
       Essa função recebe o estado anterior (prev).
+      E update retorna o "novo" player
     */
-    setPlayer(prev => {
-
-      // Cria uma cópia do jogador para conseguir mostrar na UI, já que ele não detecta mutações internas
-      const copy = Object.assign(
-
-        // Cria um novo objeto com o mesmo prototype (Player)
-        Object.create(Object.getPrototypeOf(prev)),
-
-        // Copia todas as propriedades do jogador anterior
-        prev
-
-      );
-
-      // Aplicar a mudança
-      mutator(copy);
-
-      // Retorna a cópia do jogador que é usada na UI
-      return copy;
-    });
+    onPlayerUpdate(prev => update(prev));
   }
 
-  // Função para atualizar o inimigo, enemyId é para encontrar o inimigo especifico no array e o mutator seria a atualização
-  function updateEnemy(enemyId, mutator) {
+  // Função para atualizar o inimigo, enemyId é para encontrar o inimigo especifico no array e o update seria a atualização, no caso o inimigo com os novos dados
+  function updateEnemy(enemyId, update) {
 
     /*
-      setEnemies recebe uma função.
+      onEnemiesUpdate recebe uma função.
       Essa função recebe o estado anterior do inimigo (enemy).
+      E update retorna o "novo" jogador
     */
-    setEnemies(prevEnemies => prevEnemies.map(enemy => {
-      // Se não for o inimigo especificado, pode retornar como estava, pois ele não vai atualizar
-      if (enemy.id !== enemyId) return enemy;
-
-      // Cria uma cópia do inimigo para conseguir mostrar na UI, já que ele não detecta mutações internas
-      const copy = Object.assign(
-
-        // Cria um novo objeto com o mesmo prototype (Enemy)
-        Object.create(Object.getPrototypeOf(enemy)),
-
-        // Copia todas as propriedades anteriores
-        enemy
-      );
-
-      // Aplicar a mudança
-      mutator(copy);
-
-      // Retorna a cópia do jogador que é usada na UI
-      return copy;
-    }))
+    onEnemiesUpdate(prevEnemies =>
+      prevEnemies.map(enemy =>
+        // Se não for o inimigo especificado, pode retornar como estava, pois ele não vai atualizar
+        // Caso ao contrário, o update vai mostrar o inimigo com os novos dados
+        enemy.id === enemyId
+          ? update(enemy)
+          : enemy
+      )
+    );
   }
   //#endregion atualizacao-instancias
 
@@ -392,15 +396,11 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   function attack(attacker, attackerId, defender, defenderId) {
 
     // Faz verificação de quem é o autor
-    if (attacker === player) {
+    if (attackerId === player.id) {
       // Chama a função que faz a atualização na instância
-      updatePlayer(p => {
-        p.posture = POSTURE.OFFENSIVE;
-      });
+      updatePlayer(p => setPosture(POSTURE.OFFENSIVE, p));
     } else {
-      updateEnemy(attackerId, enemy => {
-        enemy.posture = POSTURE.OFFENSIVE;
-      });
+      updateEnemy(attackerId, enemy => setPosture(POSTURE.OFFENSIVE, enemy));
     };
 
     // Verificar se o ataque vai ser normal ou critico
@@ -413,32 +413,24 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
       ? Math.floor(attacker.stats.dmg.physical * 1.8)
       : attacker.stats.dmg.physical;
 
-    if (defender === player) {
-      updatePlayer(p => {
-        p.takeDamage(final_damage);
-      });
+    if (defenderId === player.id) {
+      updatePlayer(p => applyDamage(final_damage, p));
     } else {
-      updateEnemy(defenderId, enemy => {
-        enemy.takeDamage(final_damage);
-      });
+      updateEnemy(defenderId, enemy => applyDamage(final_damage, enemy));
     };
     console.log(`${attacker.name}: Attacked ${defender.name} and ${critical ? "critically hit dealing " : "dealt "}${final_damage}`)
 
   }
 
   // Função de Defender
-  function defend(actor, actorId) {
+  function defend(actorId) {
     // Faz verificação de quem é o autor
-    if (actor === player) {
+    if (actorId === player.id) {
       // Chama a função que faz a atualização na instância
-      updatePlayer(p => {
-        p.posture = POSTURE.DEFENSIVE;
-      });
+      updatePlayer(p => setPosture(POSTURE.DEFENSIVE, p));
       // Caso não seja, ele faz a atualização no inimigo
     } else {
-      updateEnemy(actorId, enemy => {
-        enemy.posture = POSTURE.DEFENSIVE;
-      });
+      updateEnemy(actorId, enemy => setPosture(POSTURE.DEFENSIVE, enemy));
     };
   };
   //#endregion acoes
