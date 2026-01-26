@@ -12,8 +12,37 @@ import { Enemy } from "./Enemies/Enemy.js";
 import { applyDamage } from "./Systems/sys_ApplyDamage.js"
 import { enemyAI } from "./Systems/sys_EnemyAI.js"
 import { setPosture } from "./Systems/sys_SetPosture.js"
+import { heal } from "./Systems/sys_Heal.js"
+import { addStats } from "./Systems/sys_addStats.js";
 
-function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene, enemies, player }) {
+function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene, enemies, player, battle, setBattle }) {
+
+  /* 
+  ==============================
+  --- >>> Pré Definições <<< ---
+  ==============================
+  */
+
+  // Nome dos status para serem melhorados por meio de addStats
+  const STAT_TYPE = {
+    // Vida
+    HEALTH: "health",
+    DAMAGE: "damage",
+    RESISTANCE: "resistance"
+  }
+
+  const STAT = {
+    // Vida
+    MAX: "max",
+
+    // Dano
+    PHYSICAL: "physical",
+    CRITICAL_CHANCE: "critical_chance",
+
+    // Defesa
+    ARMOR: "armor",
+    DEFENSE: "defense"
+  }
 
   // Nomes das posturas predefinidos para não ocorrer problemas
   const POSTURE = {
@@ -29,33 +58,24 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   // QUEUE
   const turnQueueRef = useRef([]);
 
+  // ID das instâncias
+  const actorsCounter = useRef(0)
+
   // Criação do jogador na inicialização
   useEffect(() => {
 
     // Contador
-    let actorsCounter = 0;
+    actorsCounter.current = 0
 
     // Criar jogador
-    const instance = new Player({ id: actorsCounter++ });
+    const instance = new Player({ id: actorsCounter.current++ });
     // Informa ao componente pai que o jogador existe e pode ser repassado para UI
     onPlayerUpdate(instance);
 
     console.log("Player was created: " + instance)
 
-    // Criar os inimigos
-    const enemiesInstances = [
-      new Enemy({ type: "skeleton", id: actorsCounter++ }),
-      new Enemy({ type: "skeleton", id: actorsCounter++ })
-    ]
-
-    // Informa ao componente pai que os inimigos existem e pode ser repassado para UI
-    onEnemiesUpdate(enemiesInstances);
-
-    console.log("Enemies were created: " + enemiesInstances)
-
-    // Mudar phase para montar a queue
-    setPhase("queue")
-    console.log(`BattleSystem: Phase changed to ${phase}!`);
+    // Crie uma batalha nova, no caso a inicial
+    NewBattle();
 
   }, []);
 
@@ -85,6 +105,86 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   //>>> Creating <<<//
   ////////////////////
   function NewBattle() {
+
+    // Mude a phase para create, ele não é um useEffect, mas algo chamado pelo analysing e se causar um render enquanto gera ele não chamará o analysing novamente.
+    setPhase("creating")
+
+    // Diga que é uma nova batalha
+    setBattle(prev => prev + 1)
+
+    // O sistema de criação é baseada em batalha, quase semelhante a nível, mas para deixar mais simples foi usado esse termo e além disos seria muito estranho
+    // aumentar um nível após cada batalha.
+
+    /*
+    Lembrar que antes das batalhas divisiveis por 3 sempre tem como escolher uma carta, como eu não fiz elas, vai apenas ser recuperado a vida, mas
+    podem ser adicionadas no futuro.
+
+    Batalha inicial = 1 Skeleton
+    Batalhas 2~3 = 1~2 Skeletons
+    Batalhas >4 = 2~3 Skeletons
+    */
+
+    console.warn("Battle", battle)
+
+    const enemiesInstances = []
+
+    // Se for a batalha inicial
+    if (battle === 1) {
+
+      // Criar os inimigos
+      enemiesInstances.push(new Enemy({ type: "skeleton", id: actorsCounter.current++ }))
+
+    } else {
+
+      if (battle >= 2 && battle <= 3) {
+
+        // Se o RNG maior que 0.4
+        if (Math.random() > 0.4) {
+
+          // Criar os inimigos
+          enemiesInstances.push(
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ }),
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ })
+          )
+
+        } else {
+
+          // Criar os inimigos
+          enemiesInstances.push(new Enemy({ type: "skeleton", id: actorsCounter.current++ }))
+
+        }
+
+      } else {
+
+        // Se o RNG maior que 0.4
+        if (Math.random() > 0.4) {
+
+          // Criar os inimigos
+          enemiesInstances.push(
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ }),
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ }),
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ })
+          )
+
+        } else {
+
+          // Criar os inimigos
+          enemiesInstances.push(
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ }),
+            new Enemy({ type: "skeleton", id: actorsCounter.current++ })
+          )
+
+        }
+
+      }
+    }
+
+    // Informa ao componente pai que os inimigos existem e pode ser repassado para UI
+    onEnemiesUpdate(enemiesInstances);
+    console.log("Enemies were created: " + enemiesInstances)
+
+    // Muda a phase para a queue mantendo o flow da batalha
+    setPhase("queue")
 
   }
 
@@ -304,7 +404,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
       // Se o inimigo morreu no turno atual por conta de algum estado (veneno, fogo, ...)
       if (deadEnemies.includes(turnActor.id)) nextTurn();
-    
+
     }
 
     // Se não há inimigos vivos
@@ -341,6 +441,67 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     setPhase("awaiting_input")
 
   }
+
+  //////////////////////
+  //>>> ANALYSING <<< //
+  //////////////////////
+
+  const isAnalysing = useRef(false)
+
+  useEffect(() => {
+    // Se não for a fase de final do turno
+    if (phase !== "analysing") return console.log("Isn't 'analysing' phase");
+    if (isAnalysing.current) return console.log("Is already analysing!!!")
+    console.log("Is 'analysing' phase!")
+
+    // Fale que já está analisando
+    isAnalysing.current = true
+
+    // Se o número for divisível por 3 o jogador recupera a vida
+    if (battle % 3 === 0) {
+
+      // Cria uma váriavel que contém o jogador para que seja atualizado
+      // As atualização são feitas em playerUpdated e não re-executando o onPlayerUpdate, pois atualizações anteriores no mesmo render seriam descartados
+      // Assim ele junta as atualizações e manda tudo um só para o jogador original
+      let playerUpdated = player
+
+      // Cura é realizada na váriavel contém o jogador, sendo 80% da vida máxima
+      playerUpdated = heal(playerUpdated, 0.8)
+
+      // Define que status vai ser aumentado
+      let whatStat = Math.floor(Math.random() * 4) + 1;
+
+      switch (whatStat) {
+        // Aumento de vida
+        case 1:
+          playerUpdated = addStats(playerUpdated, STAT_TYPE.HEALTH, STAT.MAX, 5)
+          break;
+        // Aumento de dano físico
+        case 2:
+          playerUpdated = addStats(playerUpdated, STAT_TYPE.DAMAGE, STAT.PHYSICAL, 1)
+          break;
+        // Aumento de Chance de Crítico
+        case 3:
+          playerUpdated = addStats(playerUpdated, STAT_TYPE.DAMAGE, STAT.CRITICAL_CHANCE, 0.1)
+          break;
+        // Aumento de Defesa
+        case 4:
+          playerUpdated = addStats(playerUpdated, STAT_TYPE.RESISTANCE, STAT.DEFENSE, 1)
+          break;
+      }
+
+      // Atualizar o jogador
+      onPlayerUpdate(playerUpdated)
+
+    }
+
+    // Após a verificação de recompensas, é uma nova batalha
+    NewBattle();
+
+    // Terminou de analisar
+    isAnalysing.current = false
+
+  }, [phase])
 
   /*
   /~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/

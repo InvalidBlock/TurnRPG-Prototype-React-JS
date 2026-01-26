@@ -21,7 +21,8 @@ export class Player {
                 armor: 0
             },
             dmg: {
-                physical: 1
+                physical: 1,
+                critical_chance: 0.1
             },
             initiative: 2
         };

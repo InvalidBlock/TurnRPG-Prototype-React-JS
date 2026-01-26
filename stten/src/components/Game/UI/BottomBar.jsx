@@ -4,13 +4,14 @@ import "./BottomBar.css"
 // Cartas
 import Cards from "./Cards/Cards"
 
-function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, selectedTarget}) {
+function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, selectedTarget, setSelectedTarget}) {
 
     const awaiting_input = phase === "awaiting_input"
     const player_turn = turnActor.type === "player"
 
     // Ao clicar no botão de atacar
     function handleAttack() {
+        if (!selectedTarget) return;
         // Mudar intenção
         setIntention({
             actor: "player",
@@ -23,6 +24,7 @@ function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, sel
 
         // Mudar phase
         setPhase("action")
+        setSelectedTarget(null)
     }
 
     // Ao clicar no botão de defender
