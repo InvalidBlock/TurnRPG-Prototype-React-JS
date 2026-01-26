@@ -1,3 +1,5 @@
+import "./MainMenu.css"
+
 function MainMenu({ changeScene }) {
   return (
     <div className='menu-container'>

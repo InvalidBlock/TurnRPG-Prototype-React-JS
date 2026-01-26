@@ -1,5 +1,5 @@
 // Indica que o aplicativo está em modo de desenvolvimento
-export const DEV_MODE = true;
+export const DEV_MODE = false;
 
 // Armazena as credenciais do usuário (Dev)
 const devCredentials = {

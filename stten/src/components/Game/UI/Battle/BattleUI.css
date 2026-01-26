@@ -58,3 +58,16 @@
     background: none;
     border: none;
 }
+
+.sprite-enemy:hover {
+    cursor: pointer;
+    transform: rotate(-0.01turn);
+}
+
+.sprite-player:hover {
+    cursor:grab;
+}
+.sprite-player:active {
+    cursor:grabbing;
+    transform: rotateX(-0.1turn);
+}
