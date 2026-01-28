@@ -1,10 +1,6 @@
 import "./BottomBar.css"
 
-// import Items from "./Actions/Items"
-// Cartas
-import Cards from "./Cards/Cards"
-
-function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, selectedTarget, setSelectedTarget}) {
+function BottomBar({ turnActor, phase, setPhase, setIntention, selectedTarget, setSelectedTarget}) {
 
     const awaiting_input = phase === "awaiting_input"
     const player_turn = turnActor.type === "player"
@@ -45,14 +41,12 @@ function BottomBar({ choose_cards, turnActor, phase, setPhase, setIntention, sel
 
     return (
         <>
-            {awaiting_input && player_turn && !choose_cards
+            {awaiting_input && player_turn
                 ? <div className="actions">
                     <button className={"action-attack"} onClick={handleAttack}>Attack</button>
                     <button className={"action-defend"} onClick={handleDefense}>Defend</button>
                 </div>
-                : player_turn
-                    ? <div className="cards"><Cards /></div>
-                    : <div />
+                : <div/>
             }
         </>
     )

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 
 // UI
 import TurnStats from "./Game/UI/TurnStats"
-import Options from "./Game/UI/Options.jsx"
 // Luta
 import BattleSystem from "./Game/BattleSystem.jsx"
 import BattleUI from "./Game/UI/Battle/BattleUI.jsx"
@@ -13,7 +12,7 @@ import Statistics from "./Game/UI/Statistics.jsx"
 // Actions & Cards
 import BottomBar from "./Game/UI/BottomBar.jsx"
 
-function Game({ changeScene }) {
+function Game({ changeScene, authenticated}) {
 
   /*
   =================================
@@ -91,9 +90,6 @@ function Game({ changeScene }) {
   }
   */
 
-  // Estado que define se o jogador deve escolher alguma carta (Provisório)
-  let choose_cards = false
-
   return (
     <>
       {/*
@@ -104,8 +100,6 @@ function Game({ changeScene }) {
       Char's (Jogador > Inimigo)
       Ações do Jogador > Cartas para escolha
       Estatisticas (Jogador)
-
-      Se possível futuramente uma lista com informações resumidas das cartas escolhidas. 
 
       */}
 
@@ -124,12 +118,13 @@ function Game({ changeScene }) {
       player={player}
       battle={battle}
       setBattle={setBattle}
+      authenticated={authenticated}
       />
 
       {player && turnActor !== null && <div className="player">
 
         {/* UI Top */}
-        <div className="bar-top"><TurnStats turnActor={turnActor} player={player} /><Options /></div>
+        <div className="bar-top"><TurnStats turnActor={turnActor} player={player} /></div>
 
         {/* Batalha */}
         <div className="battle"><BattleUI turnActor={turnActor} selectedTarget={selectedTarget} setSelectedTarget={setSelectedTarget} player={player} enemies={enemies} /></div>
@@ -140,13 +135,10 @@ function Game({ changeScene }) {
         Foi criado o BottomBar para ter pelo menos a estilização da barra e não ficar sem nada durante turnos do inimigo
 
         */}
-        <div className="bar-bottom"><BottomBar turnActor={turnActor} choose_cards={choose_cards} phase={phase} setPhase={setPhase} setIntention={setIntention} selectedTarget={selectedTarget} setSelectedTarget={setSelectedTarget} /></div>
+        <div className="bar-bottom"><BottomBar turnActor={turnActor} phase={phase} setPhase={setPhase} setIntention={setIntention} selectedTarget={selectedTarget} setSelectedTarget={setSelectedTarget} /></div>
 
         {/* Estátisticas */}
         <div className="statistics"><Statistics player={player} /></div>
-
-        {/* Lista de Cartas */}
-        <div className="card-list">Lista de Cartas (Nada por enquanto)</div>
 
       </div>}
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { unlockTrophy } from "../../services/Gamejolt/Gamejolt.js";
 
 ////////////////////////
 // >>> Instâncias <<< //
@@ -15,7 +16,7 @@ import { setPosture } from "./Systems/sys_SetPosture.js"
 import { heal } from "./Systems/sys_Heal.js"
 import { addStats } from "./Systems/sys_addStats.js";
 
-function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene, enemies, player, battle, setBattle }) {
+function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor, intention, setIntention, phase, setPhase, changeScene, enemies, player, battle, setBattle, authenticated }) {
 
   /* 
   ==============================
@@ -81,7 +82,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
 
   // Para caso o jogador morra ou escolha resetar a run
   function resetRun() {
-    console.warn("THE PLAYER DIED, the logic for this function will be implemented later")
+    console.warn("THE PLAYER DIED!")
     changeScene("menu");
   }
 
@@ -125,6 +126,15 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
     */
 
     console.warn("Battle", battle)
+
+    // Se o jogador conseguir vencer a primeira batalha, ele dispara um desbloqueio de troféu
+    // Não foi colocado verificador se o jogador já tem o troféu, pois isso precisaria de uma persistência de estado por armazenamento local/cloud
+    // O tempo estava curto então não implementei, mas também percebi que a API quando isso acontece apenas retorna sucesso novamente sem nenhum problema
+    // Pois ela mesmo vê que o usuário já contém a conquista.
+    if (battle > 1 && authenticated) {
+      unlockTrophy(289715);
+      console.warn("O usuário desbloqueou o troféu de vencer uma batalha!")
+    }
 
     const enemiesInstances = []
 

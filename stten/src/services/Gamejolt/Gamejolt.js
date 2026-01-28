@@ -3,7 +3,7 @@
 import md5 from "crypto-js/md5";
 
 // Importa as credenciais do usuário (Dev)
-import { getDevCredentials, setDevCredentials, DEV_MODE } from "../../components/DEV/Auth/Credentials.js";
+import { devCred, DEV_MODE } from "../../components/DEV/Credentials.js";
 
 // ID do jogo fornecido pelo painel da Game Jolt
 const GAME_ID = "1040406";
@@ -21,6 +21,12 @@ const PRIVATE_KEY = "be40e9583dbadc8f935fdf9035b078ad";
 // URL base da API da Game Jolt (versão 1.2)
 const BASE_URL = "https://api.gamejolt.com/api/game/v1_2";
 
+// Dados da sessão
+let session = {
+  authenticated: false,
+  username: null,
+  token: null
+};
 
 /*
   Gera a assinatura da requisição.
@@ -78,12 +84,6 @@ function callApi(endpoint, params) {
   Verifica se username e token são válidos.
 */
 export function authenticateUser(username, userToken) {
-
-  // Atualiza as credenciais dos dev no Credentials.js
-  if (DEV_MODE) {
-    setDevCredentials(username, userToken, true);
-  }
-
   return callApi("/users/authenticate/", {
     username: username,
     user_token: userToken
@@ -94,18 +94,75 @@ export function authenticateUser(username, userToken) {
   Desbloqueia uma conquista (trophy) para o usuário.
 */
 export function unlockTrophy(trophyId) {
-
-  let username, token = "";
-
-  // Importa as credenciais do usuário (Dev)
-  if (DEV_MODE) {
-    username = getDevCredentials().username;
-    token = getDevCredentials().token;
+  if (!session.authenticated) {
+    console.warn("Usuário não autenticado, portanto a conquista não foi enviada.");
+    return Promise.resolve(null);
   }
 
   return callApi("/trophies/add-achieved/", {
-    username: username,
-    user_token: token,
+    username: session.username,
+    user_token: session.token,
     trophy_id: trophyId
   });
 }
+
+
+/*
+  Pega as credenciais que a gameJolt fornece para
+  autenticar o usuário automáticamente
+*/
+function getAutoAuthCredentials() {
+  const params = new URLSearchParams(window.location.search);
+
+  const username = params.get("gjapi_username");
+  const game_token = params.get("gjapi_token");
+
+  if (!username || !game_token) {
+    return null;
+  }
+
+  return { username, game_token };
+}
+
+/*
+  Com as credenciais fornecidas pela gameJolt vai ser
+  verificado elas e fornecidos para a autenticação de usuário
+*/
+export function autoAuthenticateUser() {
+  const creds = getAutoAuthCredentials();
+
+  if (!creds) {
+    return Promise.resolve({
+      success: false,
+      reason: "NO_AUTO_AUTH"
+    });
+  }
+
+  setUser(creds.username);
+
+  return authenticateUser(creds.username, creds.game_token);
+}
+
+/*
+  Faz uma verificação inicial se está em modo dev para ter que pegar as credenciais fornecidas por input
+  ou pode prosseguir normalmente com a autoAuth.
+*/
+export function initAuth() {
+
+  const creds = DEV_MODE ? devCred : getAutoAuthCredentials();
+  
+  if (!creds) return Promise.resolve(null);
+
+  return authenticateUser(creds.username, creds.game_token)
+    .then(res => {
+      if (res?.response?.success === "true") {
+        session.authenticated = true;
+        session.username = creds.username;
+        session.token = creds.game_token;
+      }
+      return res;
+    });
+
+}
+
+
