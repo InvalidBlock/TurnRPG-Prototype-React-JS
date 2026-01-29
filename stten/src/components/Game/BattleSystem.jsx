@@ -527,7 +527,7 @@ function BattleSystem({ onPlayerUpdate, onEnemiesUpdate, turnActor, setTurnActor
   function updatePlayer(update) {
 
     /*
-      setPlayer recebe uma função.
+      onPlayerUpdate recebe uma função.
       Essa função recebe o estado anterior (prev).
       E update retorna o "novo" player
     */

@@ -1,20 +1,10 @@
-:root {
-
-    align-items: center;
-    justify-content: center;
-    align-items: center;
-    width: 98vw;
-    height:fit-content;
-
-}
-
 .bar-top {
 
     position: absolute;
     top: 0px;
     left: 0px;
     right: 0px;
-    bottom: 570px;
+    bottom: 820px;
 
     /*Para Debug*/
     /* border: 1px solid red; */
@@ -44,7 +34,7 @@
 
     position: absolute;
     top: 45px;
-    bottom: 175px;
+    bottom: 275px;
     left: 0%;
     right: 0%;
 
@@ -59,8 +49,8 @@
     position: absolute;
     left: 0%;
     right: 0%;
-    top: 440px;
-    bottom: 110px;
+    top: 582px;
+    bottom: 230px;
 
     /*Para Debug*/
     /* border: 1px solid red; */
@@ -81,7 +71,7 @@
     position: absolute;
     right: 0%;
     left: 0%;
-    top: 505px;
+    top: 655px;
     bottom: 0%;
 
     padding: 0 30px;
